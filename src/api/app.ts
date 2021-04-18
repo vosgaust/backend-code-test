@@ -21,10 +21,10 @@ const inMemoryRepository = new InMemoryGeniallyRepository();
 const createGeniallyService = new CreateGeniallyService(inMemoryRepository);
 const createGeniallyController = new CreateGeniallyController(createGeniallyService);
 
-const deleteGeniallyService = new DeleteGeniallyService();
+const deleteGeniallyService = new DeleteGeniallyService(inMemoryRepository);
 const deleteGeniallyController = new DeleteGeniallyController(deleteGeniallyService);
 
-const renameGeniallyService = new RenameGeniallyService();
+const renameGeniallyService = new RenameGeniallyService(inMemoryRepository);
 const updateGeniallyController = new UpdateGeniallyController(renameGeniallyService);
 
 // Express configuration

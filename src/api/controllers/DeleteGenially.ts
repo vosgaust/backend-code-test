@@ -8,10 +8,13 @@ export class DeleteGeniallyController implements Controller {
 
   async exec(req: Request, res: Response) {
     try {
-      await this.deleteGeniallyService.execute();
-      // TODO: create response type
+      const deleteGeniallyRequest = {
+        id: req.body.id
+      };
+      await this.deleteGeniallyService.execute(deleteGeniallyRequest);
       res.status(200).send({ status: "ok" }); 
     } catch(error) {
+      console.error(error);
       res.status(500).send({ status: error });
     }
   }

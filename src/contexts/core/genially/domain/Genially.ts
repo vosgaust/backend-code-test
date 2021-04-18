@@ -27,6 +27,9 @@ export default class Genially {
   }
 
   updateDeletedAt(): void {
+    if(this._deletedAt) {
+      throw new Error(`genially with id ${this._id} is already deleted`);
+    }
     this._deletedAt = new Date();
   }
 

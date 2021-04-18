@@ -8,11 +8,15 @@ export class UpdateGeniallyController implements Controller {
 
   async exec(req: Request, res: Response) {
     try {
-      await this.renameGeniallyService.execute();
-      // TODO: create response type
+      const updateGeniallyRequest = {
+        id: req.body.id,
+        name: req.body.name
+      };
+      await this.renameGeniallyService.execute(updateGeniallyRequest);
       res.status(200).send({ status: "ok" }); 
     } catch(error) {
-      res.status(500).send({ status: error });
+      console.error(error);
+      res.status(500).json({ status: error });
     }
   }
 }

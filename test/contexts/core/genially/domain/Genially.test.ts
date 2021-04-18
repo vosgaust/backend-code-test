@@ -74,4 +74,26 @@ describe("Genially", () => {
     expect(genially.name).toBe(newName);
     expect(genially.modifiedAt).not.toBeUndefined();
   });
+
+  it("Should delete a genially properly", () => {
+    const id = "e86c3533-1f61-475a-8b19-382789d126fc";
+    const name = "name";
+    const description = "description";
+
+    const genially = new Genially(id, name, description);
+    expect(genially.deletedAt).toBeUndefined();
+    genially.updateDeletedAt();
+    expect(genially.deletedAt).not.toBeUndefined();
+  });
+
+  it("Should fail to delete a genially twice", () => {
+    const id = "e86c3533-1f61-475a-8b19-382789d126fc";
+    const name = "name";
+    const description = "description";
+
+    const genially = new Genially(id, name, description);
+    expect(genially.deletedAt).toBeUndefined();
+    genially.updateDeletedAt();
+    expect(() => genially.updateDeletedAt()).toThrowError();
+  });
 });
