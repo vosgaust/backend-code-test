@@ -1,4 +1,5 @@
-import validate from "uuid-validate";
+import {validate as uuidValidate} from "uuid";
+import InvalidRequestError from "./InvalidRequest";
 
 export class GeniallyID {
   readonly value: string
@@ -9,9 +10,8 @@ export class GeniallyID {
   }
 
   private checkValidUuid(value: string): void {
-    if(!validate(value)) {
-      //TODO: define this error
-      throw new Error(`${value} is not a valid id`);
+    if (!uuidValidate(value)) {
+      throw new InvalidRequestError("id", `${value} is not a valid uuid`);
     }
   }
 }

@@ -1,4 +1,5 @@
 import Genially from "../domain/Genially";
+import GeniallyNotExist from "../domain/GeniallyNotExist";
 import GeniallyRepository from "../domain/GeniallyRepository";
 
 type DeleteGeniallyServiceRequest = {
@@ -11,7 +12,7 @@ export default class DeleteGeniallyService {
   public async execute(req: DeleteGeniallyServiceRequest): Promise<Genially> {
     const genially = await this.repository.find(req.id);
     if (!genially) {
-      throw new Error(`genially with id ${req.id} not found`);
+      throw new GeniallyNotExist(req.id);
     }
     genially.updateDeletedAt();
     await this.repository.delete(req.id);

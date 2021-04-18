@@ -1,4 +1,5 @@
 import Genially from "../domain/Genially";
+import GeniallyNotExist from "../domain/GeniallyNotExist";
 import GeniallyRepository from "../domain/GeniallyRepository";
 
 type RenameGeniallyServiceRequest = {
@@ -12,7 +13,7 @@ export default class RenameGeniallyService {
   public async execute(req: RenameGeniallyServiceRequest): Promise<Genially> {
     const genially = await this.repository.find(req.id);
     if (!genially) {
-      throw new Error(`genially with id ${req.id} not found`);
+      throw new GeniallyNotExist(req.id);
     }
     genially.updateName(req.name);
     await this.repository.delete(req.id);

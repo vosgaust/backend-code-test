@@ -1,6 +1,7 @@
 import { GeniallyName } from "./GeniallyName";
 import { GeniallyID } from "./GeniallyID";
 import { GeniallyDescription } from "./GeniallyDescription";
+import GeniallyAlreadyDeleted from "./GeniallyAlreadyDeleted";
 
 export default class Genially {
   private _id: GeniallyID;
@@ -28,7 +29,7 @@ export default class Genially {
 
   updateDeletedAt(): void {
     if(this._deletedAt) {
-      throw new Error(`genially with id ${this._id} is already deleted`);
+      throw new GeniallyAlreadyDeleted(this.id);
     }
     this._deletedAt = new Date();
   }

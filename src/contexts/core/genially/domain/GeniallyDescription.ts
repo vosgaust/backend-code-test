@@ -1,3 +1,5 @@
+import InvalidRequestError from "./InvalidRequest";
+
 export class GeniallyDescription {
   readonly value: string
   private readonly maxChars = 125;
@@ -9,7 +11,7 @@ export class GeniallyDescription {
 
   private checkCorrectValue(value: string) {
     if(value.length > this.maxChars) {
-      throw new Error(`Genially description should be at max ${this.maxChars} characters long`);
+      throw new InvalidRequestError("description", `should be at max ${this.maxChars} characters long`);
     }
   }
 }

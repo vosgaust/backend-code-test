@@ -1,4 +1,5 @@
 import { Response, Request } from "express";
+import InvalidRequestError from "../../contexts/core/genially/domain/InvalidRequest";
 import CreateGeniallyService from "../../contexts/core/genially/application/CreateGeniallyService";
 import { Controller } from "./Controller";
 
@@ -16,8 +17,13 @@ export class CreateGeniallyController implements Controller {
       await this.createGeniallyService.execute(createGeniallyRequest);
       res.status(200).send({ status: "ok" }); 
     } catch(error) {
-      console.error(error);
-      res.status(500).send({ status: error });
+      let statusCode = 500;
+      let message = "";
+      if(error instanceof InvalidRequestError) {
+        statusCode = 400;
+        message = `invalid request for argument ${error.name}: ${error.message}`;
+      }
+      res.status(statusCode).send({ status: "error", message: message });
     }
   }
 }
