@@ -19,7 +19,7 @@ export class GeniallyRepositoryMock implements GeniallyRepository {
   }
 
   onFindReturn(value: Genially): void {
-    this.saveMock.mockResolvedValue(value);
+    this.findMock.mockResolvedValue(value);
   }
 
   assertFindCalledWith(value: string): void {

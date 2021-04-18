@@ -17,6 +17,19 @@ export default class Genially {
     this._createdAt = new Date();
   }
 
+  updateName(newName: string): void {
+    this._name = new GeniallyName(newName);
+    this.updateModifiedAt();
+  }
+
+  private updateModifiedAt(): void {
+    this._modifiedAt = new Date();
+  }
+
+  updateDeletedAt(): void {
+    this._deletedAt = new Date();
+  }
+
   get id(): string {
     return this._id.value;
   }

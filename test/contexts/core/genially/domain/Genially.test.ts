@@ -61,4 +61,17 @@ describe("Genially", () => {
 
     expect(() => new Genially(id, name, description)).toThrowError();
   });
+
+  it("Should change the name and modified date properly", () => {
+    const id = "e86c3533-1f61-475a-8b19-382789d126fc";
+    const name = "name";
+    const description = "description";
+    const newName = "newName";
+
+    const genially = new Genially(id, name, description);
+    expect(genially.modifiedAt).toBeUndefined();
+    genially.updateName(newName);
+    expect(genially.name).toBe(newName);
+    expect(genially.modifiedAt).not.toBeUndefined();
+  });
 });
