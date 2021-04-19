@@ -9,7 +9,7 @@ import InMemoryGeniallyRepository from "../contexts/core/genially/infrastructure
 
 // Controllers (route handlers)
 import * as healthController from "./controllers/health";
-import CreateGeniallyController from "./controllers/createGenially";
+import CreateGeniallyController from "./controllers/CreateGenially";
 import { DeleteGeniallyController } from "./controllers/DeleteGenially";
 import { UpdateGeniallyController } from "./controllers/UpdateGenially";
 import MongoGeniallyRepository from "../contexts/core/genially/infrastructure/MongoGeniallyRepository";
@@ -52,8 +52,8 @@ const increaseGeniallyCounterHandler = new NewGeniallyEventHandler(increaseGenia
 const eventBus = new InMemorySyncEventBus();
 eventBus.addEventHandler("GENIALLY_CREATED", increaseGeniallyCounterHandler);
 
-const createGeniallyService = new CreateGeniallyService(repository);
-const createGeniallyController = new CreateGeniallyController(createGeniallyService, eventBus);
+const createGeniallyService = new CreateGeniallyService(repository, eventBus);
+const createGeniallyController = new CreateGeniallyController(createGeniallyService);
 
 const deleteGeniallyService = new DeleteGeniallyService(repository);
 const deleteGeniallyController = new DeleteGeniallyController(deleteGeniallyService);

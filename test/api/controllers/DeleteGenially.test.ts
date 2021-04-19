@@ -21,9 +21,9 @@ describe("Delete a new genially", () => {
     repository = new InMemoryGeniallyRepository();
     eventBus = new InMemorySyncEventBus();
     deleteGeniallyService = new DeleteGeniallyService(repository);
-    createGeniallyService = new CreateGeniallyService(repository);
+    createGeniallyService = new CreateGeniallyService(repository, eventBus);
     deleteController = new DeleteGeniallyController(deleteGeniallyService); 
-    createController = new CreateGeniallyController(createGeniallyService, eventBus); 
+    createController = new CreateGeniallyController(createGeniallyService); 
   });
 
   it("Should delete a new Denially", async () => {

@@ -1,13 +1,16 @@
 import { GeniallyRepositoryMock } from "../infrastructure/__mocks__/GeniallyRepositoryMock";
 import CreateGeniallyService from "../../../../../src/contexts/core/genially/application/CreateGeniallyService";
 import Genially from "../../../../../src/contexts/core/genially/domain/Genially";
+import { EventBusMock } from "../../../shared/infrastructure/__mocks__/EventBusMock";
 
 let repository: GeniallyRepositoryMock;
 let service: CreateGeniallyService;
+let eventBusMock: EventBusMock;
 
 beforeEach(() => {
   repository = new GeniallyRepositoryMock();
-  service = new CreateGeniallyService(repository);
+  eventBusMock = new  EventBusMock();
+  service = new CreateGeniallyService(repository, eventBusMock);
 });
 
 describe("CreateGeniallyService", () => {
@@ -27,5 +30,7 @@ describe("CreateGeniallyService", () => {
 
     expect(createdGenially).toBeInstanceOf(Genially);
     expect(createdGenially).toEqual(expect.objectContaining(createGeniallyRequest));
+
+    eventBusMock.assertPublishCalled;
   });
 });

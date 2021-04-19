@@ -20,9 +20,9 @@ describe("Update a new genially", () => {
     repository = new InMemoryGeniallyRepository();
     eventBus = new InMemorySyncEventBus();
     renameGeniallyService = new RenameGeniallyService(repository);
-    createGeniallyService = new CreateGeniallyService(repository);
+    createGeniallyService = new CreateGeniallyService(repository, eventBus);
     updateController = new UpdateGeniallyController(renameGeniallyService); 
-    createController = new CreateGeniallyController(createGeniallyService, eventBus); 
+    createController = new CreateGeniallyController(createGeniallyService); 
   });
 
   it("Should rename a new genially", async () => {

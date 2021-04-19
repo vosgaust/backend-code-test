@@ -4,6 +4,6 @@ WORKDIR /app
 COPY . .
 
 RUN rm -rf ./dist
-RUN npm install && npm build
+RUN npm install && npm run build
 
 CMD [ "npm", "start" ]

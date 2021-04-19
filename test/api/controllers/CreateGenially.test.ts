@@ -15,9 +15,9 @@ describe("Create a new genially", () => {
 
   beforeEach(() => {
     repository = new InMemoryGeniallyRepository();
-    createGeniallyService = new CreateGeniallyService(repository);
     eventBus = new InMemorySyncEventBus();
-    controller = new CreateGeniallyController(createGeniallyService, eventBus); 
+    createGeniallyService = new CreateGeniallyService(repository, eventBus);
+    controller = new CreateGeniallyController(createGeniallyService); 
   });
 
   it("Should create a new genially", async () => {
