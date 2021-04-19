@@ -1,69 +1,70 @@
-import request from "supertest";
-import server from "../../../src/api/server";
 import { v4 as uuidv4 } from "uuid";
 
-describe("Update a new genially", () => {
-  afterEach(() => {
-    server.close();
-  });
-  beforeEach(() => {
-    server.close();
-  });
-  beforeAll(() => {
-    server.close();
-  });
+import InMemorySyncEventBus from "../../../src/contexts/shared/infrastructure/InMemorySyncEventBus";
+import InMemoryGeniallyRepository from "../../../src/contexts/core/genially/infrastructure/InMemoryGeniallyRepository";
+import CreateGeniallyService from "../../../src/contexts/core/genially/application/CreateGeniallyService";
+import CreateGeniallyController from "../../../src/api/controllers/CreateGenially";
+import RenameGeniallyService from "../../../src/contexts/core/genially/application/RenameGeniallyService";
+import { UpdateGeniallyController } from "../../../src/api/controllers/UpdateGenially";
+import { mockRequest, mockResponse } from "jest-mock-req-res";
 
+describe("Update a new genially", () => {
+  let repository: InMemoryGeniallyRepository;
+  let eventBus: InMemorySyncEventBus;
+  let renameGeniallyService: RenameGeniallyService;
+  let createGeniallyService: CreateGeniallyService;
+  let createController: CreateGeniallyController;
+  let updateController: UpdateGeniallyController;
+
+  beforeEach(() => {
+    repository = new InMemoryGeniallyRepository();
+    eventBus = new InMemorySyncEventBus();
+    renameGeniallyService = new RenameGeniallyService(repository);
+    createGeniallyService = new CreateGeniallyService(repository);
+    updateController = new UpdateGeniallyController(renameGeniallyService); 
+    createController = new CreateGeniallyController(createGeniallyService, eventBus); 
+  });
 
   it("Should rename a new genially", async () => {
     const ID = uuidv4();
-    let response = await request(server)
-    .post("/genially")
-    .send({
-      "id": ID,
-      "name": "name",
-      "description": "description"
-    });
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: "ok" });
+    const createRequest = mockRequest();
+    const createResponse = mockResponse();
+    createRequest.body = { id: ID, name: "name", description: "description" };
 
-    response = await request(server)
-    .patch("/genially")
-    .send({
-      "id": ID,
-      "name": "newName"
-    });
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: "ok" });
+    await createController.exec(createRequest, createResponse);
+    expect(createResponse.status).toHaveBeenLastCalledWith(200);
+
+    const updateRequest = mockRequest();
+    updateRequest.body = { id: ID, "name": "newName" };
+    const updateResponse = mockResponse();
+  
+    await updateController.exec(updateRequest, updateResponse);
+    expect(updateResponse.status).toHaveBeenCalledWith(200);
   });
 
   it("Should fail if invalid new name", async () => {
     const ID = uuidv4();
-    let response = await request(server)
-    .post("/genially")
-    .send({
-      "id": ID,
-      "name": "name",
-      "description": "description"
-    });
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: "ok" });
+    const createRequest = mockRequest();
+    const createResponse = mockResponse();
+    createRequest.body = { id: ID, name: "name", description: "description" };
 
-    response = await request(server)
-    .patch("/genially")
-    .send({
-      "id": ID,
-      "name": "a"
-    });
-    expect(response.status).toBe(400);
+    await createController.exec(createRequest, createResponse);
+    expect(createResponse.status).toHaveBeenLastCalledWith(200);
+
+    const updateRequest = mockRequest();
+    updateRequest.body = { id: ID, "name": "n" };
+    const updateResponse = mockResponse();
+  
+    await updateController.exec(updateRequest, updateResponse);
+    expect(updateResponse.status).toHaveBeenCalledWith(400);
   });
 
   it("Should fail if genially doesn't exist", async () => {
-    const response = await request(server)
-    .patch("/genially")
-    .send({
-      "id": uuidv4(),
-      "name": "newName"
-    });
-    expect(response.status).toBe(404);
+    const updateRequest = mockRequest();
+    updateRequest.body = { id: uuidv4(), "name": "newName" };
+    const updateResponse = mockResponse();
+  
+    await updateController.exec(updateRequest, updateResponse);
+    expect(updateResponse.status).toHaveBeenCalledWith(404);
   });
 });

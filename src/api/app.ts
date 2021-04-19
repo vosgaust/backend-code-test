@@ -9,18 +9,24 @@ import InMemoryGeniallyRepository from "../contexts/core/genially/infrastructure
 
 // Controllers (route handlers)
 import * as healthController from "./controllers/health";
-import { CreateGeniallyController } from "./controllers/createGenially";
+import CreateGeniallyController from "./controllers/createGenially";
 import { DeleteGeniallyController } from "./controllers/DeleteGenially";
 import { UpdateGeniallyController } from "./controllers/UpdateGenially";
-import MongoGeniallyRepository from "../contexts/core/genially/infrastructure/mongodb/MongoGeniallyRepository";
+import MongoGeniallyRepository from "../contexts/core/genially/infrastructure/MongoGeniallyRepository";
 import GeniallyRepository from "../contexts/core/genially/domain/GeniallyRepository";
+import InMemorySyncEventBus from "../contexts/shared/infrastructure/InMemorySyncEventBus";
+import NewGeniallyEventHandler from "../contexts/core/geniallyCounter/infrastructure/NewGeniallyEventHandler";
+import IncreaseGeniallyCounterService from "../contexts/core/geniallyCounter/application/IncreaseGeniallyCounterService";
+import MongoGeniallyCounterRepository from "../contexts/core/geniallyCounter/infrastructure/MongoGeniallyCounterRepository";
 
 // Create Express server
 const app = express();
 
 let repository: GeniallyRepository;
 const inMemoryRepository = new InMemoryGeniallyRepository();
-const mongoRepository = new MongoGeniallyRepository("mongodb://genially:genially@localhost:27017", "genially", "backend_test");
+
+const mongoHost = process.env.MONGO_HOST ? process.env.MONGO_HOST : "mongodb://test:test@localhost:27017";
+const mongoRepository = new MongoGeniallyRepository(mongoHost, "genially", "backend_test");
 
 if(process.env.NODE_ENV === "dev") {
   repository = inMemoryRepository;
@@ -33,8 +39,21 @@ if(process.env.NODE_ENV === "dev") {
   }
 }
 
+const geniallyCounterRepository = new MongoGeniallyCounterRepository(mongoHost, "genially_counter", "backend_test");
+try {
+  geniallyCounterRepository.run();
+} finally {
+  geniallyCounterRepository.close();
+}
+
+const increaseGeniallyCounterService = new IncreaseGeniallyCounterService(geniallyCounterRepository);
+const increaseGeniallyCounterHandler = new NewGeniallyEventHandler(increaseGeniallyCounterService);
+
+const eventBus = new InMemorySyncEventBus();
+eventBus.addEventHandler("GENIALLY_CREATED", increaseGeniallyCounterHandler);
+
 const createGeniallyService = new CreateGeniallyService(repository);
-const createGeniallyController = new CreateGeniallyController(createGeniallyService);
+const createGeniallyController = new CreateGeniallyController(createGeniallyService, eventBus);
 
 const deleteGeniallyService = new DeleteGeniallyService(repository);
 const deleteGeniallyController = new DeleteGeniallyController(deleteGeniallyService);

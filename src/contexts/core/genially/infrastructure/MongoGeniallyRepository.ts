@@ -1,7 +1,7 @@
-import Genially from "../../domain/Genially";
-import GeniallyRepository from "../../domain/GeniallyRepository";
+import Genially from "../domain/Genially";
+import GeniallyRepository from "../domain/GeniallyRepository";
 import { MongoClient, Collection } from "mongodb";
-import GeniallyNotExist from "../../domain/GeniallyNotExist";
+import GeniallyNotExist from "../domain/GeniallyNotExist";
 
 type GeniallyModel = {
   id: string;

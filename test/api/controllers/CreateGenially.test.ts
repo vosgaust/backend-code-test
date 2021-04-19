@@ -1,60 +1,59 @@
-import request from "supertest";
-import server from "../../../src/api/server";
 import { v4 as uuidv4 } from "uuid";
 
+import InMemoryGeniallyRepository from "../../../src/contexts/core/genially/infrastructure/InMemoryGeniallyRepository";
+import InMemorySyncEventBus from "../../../src/contexts/shared/infrastructure/InMemorySyncEventBus";
+import CreateGeniallyService from "../../../src/contexts/core/genially/application/CreateGeniallyService";
+import CreateGeniallyController from "../../../src/api/controllers/CreateGenially";
+import { mockRequest, mockResponse } from "jest-mock-req-res";
+
 describe("Create a new genially", () => {
-  afterEach(() => {
-    server.close();
-  });
+  let repository: InMemoryGeniallyRepository;
+  let createGeniallyService: CreateGeniallyService;
+  let eventBus: InMemorySyncEventBus;
+  let controller: CreateGeniallyController;
+
+
   beforeEach(() => {
-    server.close();
-  });
-  beforeAll(() => {
-    server.close();
+    repository = new InMemoryGeniallyRepository();
+    createGeniallyService = new CreateGeniallyService(repository);
+    eventBus = new InMemorySyncEventBus();
+    controller = new CreateGeniallyController(createGeniallyService, eventBus); 
   });
 
   it("Should create a new genially", async () => {
-    const response = await request(server)
-    .post("/genially")
-    .send({
-      "id": uuidv4(),
-      "name": "name",
-      "description": "description"
-    });
-    expect(response.status).toBe(200);
-    expect(response.body).toEqual({ status: "ok" });
+    const request = mockRequest();
+    request.body = {id: uuidv4(), name: "name", description: "description"};
+    const response = mockResponse();
+
+    await controller.exec(request, response);
+    expect(response.status).toHaveBeenCalledWith(200);
   });
 
   it("Should fail if invalid name", async () => {
-    const response = await request(server)
-    .post("/genially")
-    .send({
-      "id": uuidv4(),
-      "name": "n",
-      "description": "description"
-    });
-    expect(response.status).toBe(400);
+    const request = mockRequest();
+    request.body = {"id": uuidv4(), "name": "n", "description": "description"};
+    const response = mockResponse();
+
+    await controller.exec(request, response);
+  
+    expect(response.status).toHaveBeenCalledWith(400);
   });
 
   it("Should fail if id is invalid", async () => {
-    const response = await request(server)
-    .post("/genially")
-    .send({
-      "id": "invalid-uuid",
-      "name": "name",
-      "description": "description"
-    });
-    expect(response.status).toBe(400);
+    const request = mockRequest();
+    request.body = {"id": "invalid-uuid", "name": "name", "description": "description"};
+    const response = mockResponse();
+
+    await controller.exec(request, response);
+    expect(response.status).toHaveBeenCalledWith(400);
   });
 
   it("Should fail if description is invalid", async () => {
-    const response = await request(server)
-    .post("/genially")
-    .send({
-      "id": "invalid-uuid",
-      "name": "name",
-      "description": "a".repeat(126)
-    });
-    expect(response.status).toBe(400);
+    const request = mockRequest();
+    request.body = {"id": "invalid-uuid", "name": "name", "description": "a".repeat(126)};
+    const response = mockResponse();
+
+    await controller.exec(request, response);
+    expect(response.status).toHaveBeenCalledWith(400);
   });
 });
