@@ -1,0 +1,11 @@
+version: "3.8"
+services:
+  mongodb:
+    image : mongo
+    container_name: mongodb
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: genially
+      MONGO_INITDB_ROOT_PASSWORD: genially
+      MONGO_INITDB_DATABASE: backend_test
+    ports:
+      - 27017:27017

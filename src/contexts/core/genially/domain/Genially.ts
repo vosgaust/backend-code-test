@@ -11,11 +11,13 @@ export default class Genially {
   private _modifiedAt: Date;
   private _deletedAt: Date;
 
-  constructor(id: string, name: string, description?: string) {
+  constructor(id: string, name: string, description?: string, createdAt?: Date, modifiedAt?: Date, deletedAt?: Date) {
     this._id = new GeniallyID(id);
     this._name = new GeniallyName(name);
     this._description = new GeniallyDescription(description);
-    this._createdAt = new Date();
+    this._createdAt = createdAt ? createdAt : new Date();
+    this._modifiedAt = modifiedAt ? modifiedAt : undefined;
+    this._deletedAt = deletedAt ? deletedAt : undefined;
   }
 
   updateName(newName: string): void {

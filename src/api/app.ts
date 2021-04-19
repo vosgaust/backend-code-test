@@ -12,19 +12,34 @@ import * as healthController from "./controllers/health";
 import { CreateGeniallyController } from "./controllers/createGenially";
 import { DeleteGeniallyController } from "./controllers/DeleteGenially";
 import { UpdateGeniallyController } from "./controllers/UpdateGenially";
+import MongoGeniallyRepository from "../contexts/core/genially/infrastructure/mongodb/MongoGeniallyRepository";
+import GeniallyRepository from "../contexts/core/genially/domain/GeniallyRepository";
 
 // Create Express server
 const app = express();
 
+let repository: GeniallyRepository;
 const inMemoryRepository = new InMemoryGeniallyRepository();
+const mongoRepository = new MongoGeniallyRepository("mongodb://genially:genially@localhost:27017", "genially", "backend_test");
 
-const createGeniallyService = new CreateGeniallyService(inMemoryRepository);
+if(process.env.NODE_ENV === "dev") {
+  repository = inMemoryRepository;
+} else {
+  repository = mongoRepository;
+  try {
+    mongoRepository.run();
+  } finally {
+    mongoRepository.close();
+  }
+}
+
+const createGeniallyService = new CreateGeniallyService(repository);
 const createGeniallyController = new CreateGeniallyController(createGeniallyService);
 
-const deleteGeniallyService = new DeleteGeniallyService(inMemoryRepository);
+const deleteGeniallyService = new DeleteGeniallyService(repository);
 const deleteGeniallyController = new DeleteGeniallyController(deleteGeniallyService);
 
-const renameGeniallyService = new RenameGeniallyService(inMemoryRepository);
+const renameGeniallyService = new RenameGeniallyService(repository);
 const updateGeniallyController = new UpdateGeniallyController(renameGeniallyService);
 
 // Express configuration

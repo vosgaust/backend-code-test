@@ -5,12 +5,12 @@
   "scripts": {
     "build-ts": "tsc",
     "build": "npm run build-ts && npm run lint",
-    "dev": "cross-env NODE_ENV=dev ts-node-dev --ignore-watch node_modules --inspect=0.0.0.0:9267 ./src/api/server.ts",
+    "dev": "cross-env NODE_ENV=dev-mongo ts-node-dev --ignore-watch node_modules --inspect=0.0.0.0:9267 ./src/api/server.ts",
     "lint": "tsc --noEmit && eslint \"**/*.{js,ts}\" --quiet --fix",
     "serve-debug": "nodemon --inspect dist/server.js",
     "serve": "node dist/server.js",
     "start": "npm run serve",
-    "test": "jest --forceExit --coverage --verbose",
+    "test": "NODE_ENV=dev jest --forceExit --coverage --verbose",
     "watch-node": "nodemon dist/server.js",
     "watch-test": "npm run test -- --watchAll",
     "watch-ts": "tsc -w"
@@ -21,6 +21,7 @@
     "compression": "^1.7.4",
     "express": "^4.17.1",
     "lusca": "^1.6.1",
+    "mongodb": "^3.6.6",
     "uuid-validate": "0.0.1"
   },
   "devDependencies": {
@@ -30,6 +31,7 @@
     "@types/express": "^4.17.6",
     "@types/jest": "^25.2.3",
     "@types/lusca": "^1.6.1",
+    "@types/mongodb": "^3.6.12",
     "@types/node": "^13.13.4",
     "@types/supertest": "^2.0.9",
     "@types/uuid-validate": "0.0.1",
